@@ -8,14 +8,6 @@ Here is a video showing some potential user journeys with our device in the dorm
 https://youtu.be/oHhkBkmZahI
 
 
-# Team
-- Chase Reid (chaser)
-- Abhishek Mohan (abhimo)
-- Habeeb Salau (salauh)
-- Mojolaoluawa Oke (mooke)
-- Winston Fee (wfee)
-
-
 # Hardware
 ![](Images/esp.jpg)
 
@@ -103,96 +95,6 @@ The database is comprised of three tables: students (which contains student entr
 Student columns consist of Kerberos, hashed ID, dorm, first name and last name. Connections contains two informational columns, the first being the database ID of the user whose guest list is in question and the second being the database ID of the individual on that guest list.
 
 Accesses contains information about the reuqesting user (namely ID, first name, last name, Kerberos) and, of course, time of entry.
-
-
-## Helper functions
-
-`def insert_into_database(fname, lname, kerberos, student_id, dorm):`
-This function inserts a new student into the database.
-
-`def insert_into_connections(student1, student2):`
-This function gneerates a new guest list collection whereby student 2 has been added to student 1's guest list. The two arguments are the database IDs of each party.
-
-`def lookup_database(arr):`
-Returns all students in the database.
-
-`def lookup_connections(arr):`
-Returns all connections in the database.
-
-`def check_login(kerb):`
-Verifies the Kerberos entered upon login is even valid in the database.
-
-`def fetch_user_by_sid(studentID):`
-Fetches a student's entire entry by performing a search on the students table with their hashed ID as the search parameter.
-
-`def fetch_user_by_kerb(kerb):`
-Fetches a student's entire entry by performing a search on the students table with their Kerberos as the search parameter.
-
-`def fetch_user_by_id(id):`
-Fetches a student's entire entry by performing a search on the students table with their database ID as the search parameter.
-
-`def get_conns_of_user(id, conn_list):`
-First argument is the database of the ID of the user for whom we'd like to retrieve every individual on their guest list. Second argument is an empty list that will be iteratively filled with the entire entry of each student on the guest list. Performs a search of the connections table with the hosting student ID as the parameter then iterates through the collection by creating a dictionary object for each student and appending it to the `conns_list` list variable.
-
-`def get_guests_of_user(kerberos, guest_list):`
-Performs the same operation as above, but with the Kerberos of the user as the parameter, rather than their database ID.
-
-`def remove_a_guest(your_id, guest_id):`
-Removes a guest by removing from the collection's table the entry with `student1 = your_id` and `student2 = guest_id`
-
-`def update_dorm_info(kerb, dorm):`
-Retrieves your entire student entry and replaces the dorm column with an updated dorm name.
-
-`def get_all_attempts(arr):`
-Retrieves every successful dorm access/entry attempt in descending order for the guest worker.
-
-## View functions
-
-`def index():`
-Returns the index.html page, the home page.
-
-`def signup():`
-Renders the sign up page and HTML form. If the request method when hitting this endpoint is POST, it'll go through the sign up logic and invoke the `insert_into_database` method.
-
-
-`def login():`
-Renders the login page and HTML form. If request method when accessing this endpoint is POST, itll go through the login flow and invoke the `check_login` method. Creates a new session which stores your details and can be retrieved at any time.
-
-
-`def dashboard():`
-Invokes the `get_guests_of_user` method to fill in a `guest_list` list which is then passed to the rendered HTML dashboard page to be presented iteratively.
-
-`def guest_list_entry():`
-Renders the guest list entry page and HTML form. If request method when accessing this endpoint is POST, itll go through the adding a user to your guest list flow.
-
-
-`def edit_information():`
-Renders the edit information page and HTML form. If request method when accessing this endpoint is POST, itll go through the updating information flow, invoking the `update_dorm_info` method.
-
-`def access():`
-Defaults to POST request. The endpoint reached by the ESP, takes the parameters sent by the POST request, invokes the AES decryption function covered above, gets the database entry of the requesting user, checks to see if their database ID is present in the connections table in the second column and proceeds with a return of `True` or `False` depending upon the outcome.
-
-`def delete_guest(guest_id):`
-Takes in the database ID of the guest you're deleting and invokes the `remove_a_guest` with their ID as the second parameter and your ID as the first (which is retrieved by accessing the session object created upon login which stores all your details).
-
-`def guest_worker():`
-Guest worker flow. Renders guest worker HTML view, which hits this endpoint every 10 seconds and performs a `SELECT * from attempts` SQL query through the helper function from above
-
-
-`def get_attempts():`
-Invokes the `get_all_attempts` function to generate a list of all entry attempts that is outputted in plaintext for debugging purposes.
-
-`def get_all():`
-Invokes the `lookup_database` function to generate a list of all student entries that is outputted in plaintext for debugging purposes.
-
-`def get_all_connections():`
-Invokes the `lookup_connections` function to generate a list of all guest list connections that are then outputted in plaintext for debugging purposes.
-
-
-`def logout():`
-Ends the user's session by clearing the session object of its keys.
-
-
 
 # Encryption
 
