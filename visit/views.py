@@ -5,9 +5,6 @@ from Crypto.Cipher import AES
 import base64
 import binascii
 
-
-
-
 @app.route('/')
 def index():
     aes = AesEncryption()
