@@ -107,14 +107,14 @@ On the ESP side of the system, the only piece of data collected from an ID tap i
 Our first implementation of an encryption cipher was the vigenere cipher for encrypting ID numbers on the ESP side and decrypting them on the server. The plaintext is taken in to the vignere cipher and shifted with a traditional Caeser Cipher method. However, the security upgrade comes from the nonuniform shift of the each plaintext characters; they are shifted based on the decimal representation of a predetermined key.
 
 Below is a screenshot of the ESP-side code used to encrypt using a Vigenere Cipher. The ciphertext is sent to the server and decrypted to match users with their ID in the database.
-![](Images/Vignere_Cipher.JPG)
 
+![](Images/Vignere_Cipher.JPG)
 
 On the serverside the ciphertext is decrypted using on the same agreed upon keyword and reversing the direction of the shift in the alphabet. This can be used to store the student’s ID in the database so that it can match with ID numbers inputted in the webform.
 
 Below is a screeenshot of the python decryption functions used in companion with the cipher Arduino code. In both the .ino and .py implementations, the keyword for encryption and decryption is decided preimplementation.
-![](Images/Vignere_Cipher_Serverside.JPG)
 
+![](Images/Vignere_Cipher_Serverside.JPG)
 
 ### Drawbacks
 
@@ -127,7 +127,9 @@ With the second implementation, we decided to use another symmetric key algorith
 Once the main 16 byte key is decided, it is stored as a 16 byte (4x4) array with each byte representing a word. Next, the 16-byte key is expanded into 44 subkeys with an objective. Sets of 4 subkeys are used in each of the ten round of the encryption (four in each of 10 rounds) and four in the pre-round step. The first 16-byte block is taken from the plaintext and the XOR operation is used between each collumn in the plaintext array and the corresponding subkey.
 
 ## Round Operations
+
 ![](Images/AES_Structure.JPG)
+
 Flow diagram for round operations. In our 128 bit encryption, 10 rounds were used.
 
 
@@ -138,16 +140,12 @@ In each round, the Substitution Bytes or SubBytes operation (the first step) inv
 The next operation is the Shift Row operation which shifts the bytes in the State Array depending on the row number; Row zero is not shifted while rows one, two, and three are shifted one, two, and three bytes respectively to the left. This creates a further encrypted matrix with shifted rows. The diagram below shows a sample state matrix a and the associatied scrambling after the Shift Row Operation.
 
 
-![ShfitRowOperation transformation of 4x4 state matrix](Images/Shift_Row.png)
+![ShiftRowOperation transformation of 4x4 state matrix](Images/Shift_Row.png)
 
 
 Next, the state array undergoes the mix collumn step to further encrypt the data. In this step, each collumn (4 bytes) is multiplied by the Circulant MDS Matrix to diffiuse the data. The matrix maximizes the diffusion of the data bytes multiplied in. Below the r vector represents the result and the a vector represents a collumn from the status array.
 
-
 ![Maximum Distance Separable (MDS) matrix used to diffuse each collumn vector from the state matrix.](Images/Mix_Collumns.JPG)
-
-
-
 
 Finally, in the AddRoundKey step the 4 subkeys used in the round are combined with the status matrix. Each collumn of the state array is comined with a collumn from the key using an xor operation.
 
@@ -159,10 +157,12 @@ The 128 bit implementation of AES require each block size to be 16 bytes long. B
 
 On the server side, we used a function with the symmetric key and ciphertext as parameters. We imported the Crypto.Cipher module and used the mbedtls module and AES library which completes the AES (ECB) encryption.
 Server side decryption function for AES.
+
 ![Serverside Decryption for AES Function.](Images/AES_Server.JPG)
 
 On the arduino side, we used the same symmetric key to encrypt the data before sending it. We utilized AES lib
-Arduino-side encryption for AES
+Arduino-side encryption for AES.
+
 ![Arduino Side Encryption for AES Function](Images/AES_Arduino.JPG)
 
 
