@@ -52,12 +52,10 @@ const int ledPin2 = 32; //Pin for red LED
 const int ledChannel2 = 2; // PWM channel for red LED
 
 void setup() {
-
   //Sets PWM properties for each channel
   ledcSetup(ledChannel, freq, resolution);
   ledcSetup(ledChannel1,freq, resolution);
   ledcSetup(ledChannel2,freq, resolution);
-
 
   // attach each PWM channel to the corresponding pin to be controlled
   ledcAttachPin(ledPin, ledChannel);
@@ -74,12 +72,13 @@ void setup() {
   WiFi.begin(network); //attempt to connect to wifi
   uint8_t count = 0; //count used for Wifi check times
   Serial.print("Attempting to connect to ");
-  //Serial.println(network, password);
+
   while (WiFi.status() != WL_CONNECTED && count < 12) {
     delay(500);
     Serial.print(".");
     count++;
   }
+
   delay(2000);
   if (WiFi.isConnected()) { //if we connected then print our IP, Mac, and SSID we're on
     Serial.println("CONNECTED!");
@@ -87,22 +86,17 @@ void setup() {
     delay(500);
   } else { //if we failed to connect just Try again.
     Serial.println("Failed to Connect :/  Going to restart");
-
-
     Serial.println(WiFi.status());
     ESP.restart(); // restart the ESP (proper way)
   }
 }
 
 void loop() {
-
-  if (!mfrc522.PICC_IsNewCardPresent()) { //Checks to see if the RFID reader is reading a new card. If not,
-                                          //return to top of loop
+  if (!mfrc522.PICC_IsNewCardPresent()) { //Checks to see if the RFID reader is reading a new card.
     return;
   }
 
-  if (!mfrc522.PICC_ReadCardSerial()) { //Checks to see if the RFID reader is getting a reading. IF not,
-                                        //return to top of loop
+  if (!mfrc522.PICC_ReadCardSerial()) { //Checks to see if the RFID reader is getting a reading.
     return;
   }
 
@@ -136,19 +130,16 @@ void loop() {
   Serial.println(UIDstr);
   Serial.println(input);
 
-
   //Encrypts input Using AES encryption. Outputs to output
   mbedtls_aes_init( &aes );
   mbedtls_aes_setkey_enc( &aes, (const unsigned char*) key, strlen(key) * 8 );
   mbedtls_aes_crypt_ecb(&aes, MBEDTLS_AES_ENCRYPT, (const unsigned char*)input, output);
   mbedtls_aes_free( &aes );
 
-
   memset(UIDinter, '\0', sizeof(UIDinter));
   memset(UIDstr, '\0', sizeof(UIDstr));
 
   for (int i = 0; i < 16; i++) { //stores the hex representation from output into UIDstr
-
     sprintf(UIDinter, "%02x", (int)output[i]);
     strcat(UIDstr, UIDinter);
   }
@@ -156,23 +147,23 @@ void loop() {
   mfrc522.PICC_HaltA(); // stop reading from RFID
 
   sendID(); //Post the ID to the server
-
 }
 
 
-
 void sendID() {
-
   char body[500]; //for body
   sprintf(body, "studentID=%s&dorm=%s",UIDstr, Dorm ); //generate body
+
   int body_len = strlen(body); //calculate body length (for header reporting)
   sprintf(request_buffer, "POST http://chasermit.pythonanywhere.com/access HTTP/1.1\r\n");
   strcat(request_buffer, "Host: chasermit.pythonanywhere.com\r\n");
   strcat(request_buffer, "Content-Type: application/x-www-form-urlencoded\r\n");
+
   sprintf(request_buffer + strlen(request_buffer), "Content-Length: %d\r\n", body_len);
   strcat(request_buffer, "\r\n"); //new line from header to body
   strcat(request_buffer, body); //body
   strcat(request_buffer, "\r\n"); //header
+  
   Serial.println(request_buffer);
   do_http_request("chasermit.pythonanywhere.com", request_buffer, response_buffer, OUT_BUFFER_SIZE, RESPONSE_TIMEOUT, true);
 
