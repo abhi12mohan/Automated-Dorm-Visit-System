@@ -8,9 +8,9 @@
 #include "mbedtls/aes.h"
 
 mbedtls_aes_context aes;
- 
-char * key = "tmf63mnxpy3hf2cw"; // ecryption key
- 
+
+char * key = "tmf63mnxpy3hf2cw"; // encryption key
+
 char input[16];
 unsigned char output[16];
 
@@ -23,7 +23,7 @@ int UIDInt = 0;
 char UIDinter[10];
 char UIDstr [100]; //This will hold the scanned ID
 
-char Dorm[] = "Maseeh"; /// This is the dorm that this ESP is associated with (which front desk is this?)
+char Dorm[] = "Maseeh"; /// This is the dorm that this ESP is associated with
 
 char network[] = "MIT";
 char password[] = "iesc6s08";
@@ -52,18 +52,18 @@ const int ledPin2 = 32; //Pin for red LED
 const int ledChannel2 = 2; // PWM channel for red LED
 
 void setup() {
-  
+
   //Sets PWM properties for each channel
   ledcSetup(ledChannel, freq, resolution);
   ledcSetup(ledChannel1,freq, resolution);
   ledcSetup(ledChannel2,freq, resolution);
-  
-  
+
+
   // attach each PWM channel to the corresponding pin to be controlled
   ledcAttachPin(ledPin, ledChannel);
   ledcAttachPin(ledPin1, ledChannel1);
   ledcAttachPin(ledPin2, ledChannel2);
-  
+
   Serial.begin(9600); // Initialize serial communications with the PC
   while (!Serial); // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
   SPI.begin(); // Init SPI bus
@@ -88,81 +88,81 @@ void setup() {
   } else { //if we failed to connect just Try again.
     Serial.println("Failed to Connect :/  Going to restart");
 
-    
+
     Serial.println(WiFi.status());
     ESP.restart(); // restart the ESP (proper way)
   }
 }
 
 void loop() {
-  
-  if (!mfrc522.PICC_IsNewCardPresent()) { //Checks to see if the RFID reader is reading a new card. If not, 
+
+  if (!mfrc522.PICC_IsNewCardPresent()) { //Checks to see if the RFID reader is reading a new card. If not,
                                           //return to top of loop
     return;
   }
 
-  if (!mfrc522.PICC_ReadCardSerial()) { //Checks to see if the RFID reader is getting a reading. IF not, 
+  if (!mfrc522.PICC_ReadCardSerial()) { //Checks to see if the RFID reader is getting a reading. IF not,
                                         //return to top of loop
     return;
   }
-  
+
   Serial.println("Scanned card's UID:");
   for (int i = 0; i < mfrc522.uid.size; i++) { //Reads in Bytes from RFID scan
     readCard[i] = mfrc522.uid.uidByte[i];
     UID[i] = (int)readCard[i]; //converts bytes to ints and puts into UID array
   }
-  
+
   memset(UIDinter, '\0', sizeof(UIDinter));
   memset(UIDstr, '\0', sizeof(UIDstr));
-  
-  for (int i = 0;  i < mfrc522.uid.size; i++) { 
+
+  for (int i = 0;  i < mfrc522.uid.size; i++) {
     sprintf(UIDinter, "%d", UID[i]); // Converts all of the read in ints to strings
     strcat(UIDstr, UIDinter);// Appends these strings onto UIDstr
   }
   //UIDstr is now the full hashed integer ID
-  
+
   memset(UIDinter, '\0', sizeof(UIDinter));
   while(strlen(UIDstr) < 16){ //Appends question marks onto the ID to pad for 16 characters
-    
+
     sprintf(UIDinter, "?");
     strcat(UIDstr, UIDinter);
   }
-  
+
   memset(input, '\0', sizeof(input));
   for (int i = 0;  i < strlen(UIDstr); i++){ //copies UIDstr into input
     input[i]=UIDstr[i];
   }
-  
+
   Serial.println(UIDstr);
   Serial.println(input);
 
-  
+
   //Encrypts input Using AES encryption. Outputs to output
   mbedtls_aes_init( &aes );
   mbedtls_aes_setkey_enc( &aes, (const unsigned char*) key, strlen(key) * 8 );
   mbedtls_aes_crypt_ecb(&aes, MBEDTLS_AES_ENCRYPT, (const unsigned char*)input, output);
   mbedtls_aes_free( &aes );
-  
+
 
   memset(UIDinter, '\0', sizeof(UIDinter));
   memset(UIDstr, '\0', sizeof(UIDstr));
-  
+
   for (int i = 0; i < 16; i++) { //stores the hex representation from output into UIDstr
- 
+
     sprintf(UIDinter, "%02x", (int)output[i]);
     strcat(UIDstr, UIDinter);
   }
-  
+
   mfrc522.PICC_HaltA(); // stop reading from RFID
-  
+
   sendID(); //Post the ID to the server
- 
+
 }
 
 
 
 void sendID() {
-  
+
   char body[500]; //for body
   sprintf(body, "studentID=%s&dorm=%s",UIDstr, Dorm ); //generate body
   int body_len = strlen(body); //calculate body length (for header reporting)
@@ -175,13 +175,13 @@ void sendID() {
   strcat(request_buffer, "\r\n"); //header
   Serial.println(request_buffer);
   do_http_request("chasermit.pythonanywhere.com", request_buffer, response_buffer, OUT_BUFFER_SIZE, RESPONSE_TIMEOUT, true);
-   
+
   if (strstr(response_buffer, "True") != NULL){ //If the server returns "True"
     ledcWrite(ledChannel, 100); //buzzer outputs light noise
     ledcWrite(ledChannel1, 100); //green LED turned on
     delay(400); //outputs for 400 ms
   }
-  
+
   else{ //If the server didn't return "True"
     ledcWrite(ledChannel, 200); //buzzer outputs higher frequency noise
     ledcWrite(ledChannel2, 100); // red LED activated
