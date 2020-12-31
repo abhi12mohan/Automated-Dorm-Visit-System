@@ -127,11 +127,9 @@ With the second implementation, we decided to use another symmetric key algorith
 Once the main 16 byte key is decided, it is stored as a 16 byte (4x4) array with each byte representing a word. Next, the 16-byte key is expanded into 44 subkeys with an objective. Sets of 4 subkeys are used in each of the ten round of the encryption (four in each of 10 rounds) and four in the pre-round step. The first 16-byte block is taken from the plaintext and the XOR operation is used between each collumn in the plaintext array and the corresponding subkey.
 
 ## Round Operations
-
-![](Images/AES_Structure.JPG)
+![](Images/AES_Structure.jpg)
 
 Flow diagram for round operations. In our 128 bit encryption, 10 rounds were used.
-
 
 In our 128-bit system a set of functions are preformed once in each of 10 rounds to encrypt the data. The original plaintext array is modified in each of these steps and is referred to as a State Array in the intermediate steps before becoming the final cipher text array
 
