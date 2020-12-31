@@ -47,8 +47,7 @@ The power strategy for the tap in system is simple. Since the device is stationa
 
 - Sets up RFID reader, PWM channels (red LED, green LED, buzzer), and connects to the Wifi.
 
-![](Images/Setup1.jpg)
-![](Images/Setup2.jpg)
+![](Images/Setup.jpg)
 
 ## loop():
 
@@ -58,8 +57,7 @@ The power strategy for the tap in system is simple. Since the device is stationa
 - The length 16 padded ID is then encrypted and stored in hexadecimal format
 - The function sendID() is then called
 
-![](Images/Loop1.jpg)
-![](Images/Loop2.jpg)
+![](Images/Loop.jpg)
 
 ## sendID():
 - The ID stored in the UIDstr variable (which will be the hex encrypted ID at this point) and the Dorm are added to the POST body
