@@ -5,9 +5,6 @@ from Crypto.Cipher import AES
 import base64
 import binascii
 
-
-
-
 @app.route('/')
 def index():
     aes = AesEncryption()
@@ -28,11 +25,11 @@ def signup():
         host_kerb = request.form['kerberos']
         host = check_login(host_kerb)[0]
         insert_into_connections(host, host)
-        #
+        
         return redirect(url_for('index'))
 
-
     return render_template('signup.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -46,6 +43,8 @@ def login():
             return 'Incorrect information.'
 
     return render_template('login.html')
+
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -53,10 +52,8 @@ def dashboard():
     your_kerberos = session['kerberos']
     get_guests_of_user(your_kerberos, guest_list)
 
-
-
-
     return render_template('dashboard.html', guest_list=guest_list)
+
 
 @app.route('/guest-list-entry', methods=['GET', 'POST'])
 @login_required
@@ -73,36 +70,26 @@ def guest_list_entry():
 
     return render_template('guest_entry.html')
 
+
 @app.route('/edit-information', methods=['GET', 'POST'])
 @login_required
 def edit_information():
-
     your_kerberos = session['kerberos']
-
 
     if request.method == 'POST':
         dorm = request.form['dorm']
-
         update_dorm_info(your_kerberos, dorm)
 
         return redirect(url_for('dashboard'))
 
-
-
-
     you = fetch_user_by_kerb(your_kerberos)
-
-
     dorm = you[5]
 
     return render_template('edit_information.html', dorm=dorm)
 
 
-
 @app.route('/access', methods=['GET', 'POST'])
 def access():
-
-
     if request.method == 'POST':
         key = bytes('abcdefghijklmnop').encode('utf-8')
 
@@ -125,16 +112,13 @@ def access():
         while decrypted[-1] == '?':
             decrypted = decrypted[:-1]
 
-
         studentID = decrypted
         dorm = request.form.get('dorm')
-
-
-
         requesting_student = fetch_user_by_sid(decrypted)
 
         if not requesting_student:
             return 'Not a valid student in the database'
+        
         requesting_student_id = requesting_student[0]
         insert_into_attempts(studentID, requesting_student[1], requesting_student[2], requesting_student[3])
 
@@ -144,7 +128,6 @@ def access():
         for c in conns:
             if fetch_user_by_id(c[1])[5] == dorm:
                 granted_access = True
-
 
         return str(granted_access)
 
@@ -161,8 +144,6 @@ def delete_guest(guest_id):
     return redirect(url_for('dashboard'))
 
 
-
-
 @app.route('/guest-worker', methods=['GET', 'POST'])
 @login_required
 def guest_worker():
@@ -177,13 +158,7 @@ def guest_worker():
         if(dt <= now + timedelta(minutes=10)):
             recent_entries.append(k)
 
-
-
-
-
-
     return render_template('guest_worker.html', recent_entries=recent_entries)
-
 
 
 @app.route('/all-attempts')
