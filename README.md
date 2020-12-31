@@ -1,3 +1,5 @@
+<meta charset="utf-8" emacsmode="-*- markdown -*-"><link rel="stylesheet" href="https://casual-effects.com/markdeep/latest/website.css?">
+
 # Automated Dorm Visit System for MIT Halls
 
 # Overview
@@ -45,10 +47,8 @@ The power strategy for the tap in system is simple. Since the device is stationa
 
 - Sets up RFID reader, PWM channels (red LED, green LED, buzzer), and connects to the Wifi.
 
-![](Images/ESPcode1.png)
-![](Images/ESPcode2.png)
-![](Images/ESPcode3.png)
-![](Images/ESPcode4endsetup.png)
+![](Images/Setup1.jpg)
+![](Images/Setup2.jpg)
 
 ## loop():
 
@@ -58,19 +58,15 @@ The power strategy for the tap in system is simple. Since the device is stationa
 - The length 16 padded ID is then encrypted and stored in hexadecimal format
 - The function sendID() is then called
 
-![](Images/ESPcode5.png)
-![](Images/ESPcode6.png)
-![](Images/ESPcode7endloop.png)
+![](Images/Loop1.jpg)
+![](Images/Loop2.jpg)
 
 ## sendID():
 - The ID stored in the UIDstr variable (which will be the hex encrypted ID at this point) and the Dorm are added to the POST body
 - The request is then sent to the server
 - The server will either return True (which triggers a small beep and the green LED), or something else (which triggers a long beep and the red LED)
 
-![](Images/ESPcode8.png)
-![](Images/ESPcode9.png)
-
-
+![](Images/SendID.jpg)
 
 # Server-Side
 
