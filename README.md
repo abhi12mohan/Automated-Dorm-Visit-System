@@ -5,9 +5,7 @@
 # Overview
 For our project, we developed a system to automate the dorm sign-in and visit process at different MIT dorms around campus. In our dorms, we often saw people waiting in the lobby for long periods of time waiting to be tapped in. We were motivated to change the status-quo with the dorm sign-in process and created a novel system to check in students quicker, easier, and more efficiently. I have also included a detailed overview of the various steps we followed during the project, and the theory behind each of those steps.
 
-# Features
-Here is a video showing some potential user journeys with our device in the dorm:
-https://youtu.be/oHhkBkmZahI
+Here is a video showing some potential user journeys within MIT campus: https://youtu.be/oHhkBkmZahI
 
 
 # Hardware
